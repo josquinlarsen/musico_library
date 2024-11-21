@@ -27,15 +27,9 @@ def create_piece(piece: PieceCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/library/", response_model=list[PieceResponse])
-def read_pieces(skip: int = 0, db: Session = Depends(get_db)):
+def read_pieces(db: Session = Depends(get_db)):
     #  can set a limit paramter and limit query. 
-    pieces = db.query(Piece).offset(skip).all()
-    print()
-    counter = 0
-    for piece in pieces:
-        print(piece.title)
-        counter += 1
-    print(counter)
+    pieces = db.query(Piece).all()
     return pieces
 
 
