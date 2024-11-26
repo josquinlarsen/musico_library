@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.sql import func
 from domain.library.library_schema import PieceCreate, PieceUpdate, PieceResponse
 from database import get_db
 from models import Piece
@@ -40,6 +41,22 @@ def read_piece(piece_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Piece not found")
     return piece
 
+@router.get("/library/generate/", response_model=list[PieceResponse])
+def generate_list(limit=10, db: Session = Depends(get_db)):
+    """
+    Generates a random set of pieces up to 10
+    """
+    print()
+    print("I Am HERE")
+    print()
+
+    print('YES')
+    random_pieces = db.query(Piece).order_by(func.random()).limit(limit).all()
+    if not random_pieces:
+        raise HTTPException(status_code=404, detail="Please add pieces to the library to generate a set list.")
+    return random_pieces
+    # raise HTTPException(status_code=404, detail="Incorrect generate flag")
+    
 
 @router.put("/library/{piece_id}", response_model=PieceResponse)
 def update_piece(piece_id: int, piece: PieceUpdate, db: Session = Depends(get_db)):
